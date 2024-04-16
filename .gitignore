@@ -1,0 +1,25 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+# Ignore node_modules in all directories
+**/node_modules/
+
+# production
+/dist
+/server-dist
+/desktop-app
+
+# misc
+.env
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.docz
+.eslintcache
+.vscode
+
+/react-shell-scripts
+
+
