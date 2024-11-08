@@ -1,10 +1,15 @@
-export const SYSTEM = 'system'
-export const ASSISTANT = 'assistant'
-export const USER = 'user'
+const SYSTEM = 'system'
+const ASSISTANT = 'assistant'
+const USER = 'user'
 
 const CHAT_GPT_MESSAGE_ROLES = {
   SYSTEM,
   ASSISTANT,
   USER,
 }
-export default CHAT_GPT_MESSAGE_ROLES
+module.exports = { 
+  SYSTEM,
+  ASSISTANT,
+  USER,
+  CHAT_GPT_MESSAGE_ROLES 
+} 

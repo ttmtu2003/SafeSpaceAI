@@ -1,5 +1,6 @@
-import fs from 'fs'
-import CHAT_GPT_MESSAGE_ROLES from './chatGPTMessageRoles'
+
+const fs = require('fs')
+const CHAT_GPT_MESSAGE_ROLES = require('./chatGPTMessageRoles')
 require('dotenv').config()
 
 const {
@@ -9,7 +10,7 @@ const {
 /**
  * Get chat GPT training contents from files
  */
-export const getChatGPTTrainingContent = () => {
+const getChatGPTTrainingContent = () => {
   // key: skill name
   // value: training content
   const trainingContentBySkill = {}
@@ -31,7 +32,7 @@ export const getChatGPTTrainingContent = () => {
 }
 
 
-export const getChatGPTTrainingContentMessageByIntent = (intentName) => {
+const getChatGPTTrainingContentMessageByIntent = (intentName) => {
   const DETECT_INTENT_NAME = 'detectCyberbullying'
 
   const trainingContents = getChatGPTTrainingContent()
@@ -52,4 +53,8 @@ export const getChatGPTTrainingContentMessageByIntent = (intentName) => {
     role: CHAT_GPT_MESSAGE_ROLES.SYSTEM,
     content: trainingContentMessage,
   }
+}
+
+module.exports = {
+  getChatGPTTrainingContentMessageByIntent
 }
