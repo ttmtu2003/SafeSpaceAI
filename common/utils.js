@@ -7,6 +7,8 @@ const {
   CHAT_GPT_TRAINING_CONTENT_DIR,
 } = process.env
 
+const redis = require('redis')
+
 /**
  * Get chat GPT training contents from files
  */
@@ -55,6 +57,41 @@ const getChatGPTTrainingContentMessageByIntent = (intentName) => {
   }
 }
 
+// Create a Redis client
+const redisClient = redis.createClient({
+    socket: {
+        host: '127.0.0.1',
+        port: 6379,
+    },
+})
+
+redisClient.connect()
+    .then(() => console.log('Connected to Redis'))
+    .catch(err => console.error('Redis connection error:', err))
+
+// Helper to get cached data
+async function getCachedResponse(key) {
+    try {
+        const data = await redisClient.get(key)
+        return data ? data : null
+    } catch (error) {
+        console.error('Error fetching from Redis:', error)
+        return null
+    }
+}
+
+// Helper to set cache
+async function setCache(key, value, ttl = 3600) { // Default TTL: 1 hour
+    try {
+        await redisClient.set(key, JSON.stringify(value), 'EX', ttl)
+    } catch (error) {
+        console.error('Error setting cache in Redis:', error)
+    }
+}
+
 module.exports = {
-  getChatGPTTrainingContentMessageByIntent
+  getChatGPTTrainingContentMessageByIntent,
+  redisClient,
+  getCachedResponse,
+  setCache,
 }
