@@ -21,6 +21,7 @@ function App() {
     setIsLoading(true);
 
     try {
+      console.log('Sending request with message:', message);
       const response = await fetch('http://localhost:5001/api/detect-cyberbullying', {
         method: 'POST',
         headers: {
@@ -29,7 +30,9 @@ function App() {
         body: JSON.stringify({ message }),
       });
 
+      
       const data = await response.json();
+      console.log("Data: " , data);
 
       // Add the system's response to the chat history
       setChatHistory((prevHistory) => [
@@ -48,12 +51,17 @@ function App() {
   };
 
   const formatResponse = (text) => {
+    if (typeof text !== 'string') {
+      console.warn('Invalid or missing text in formatResponse:', text);
+      return <p>No content available.</p>; // Provide a fallback message
+    }
+  
     return text
       .split('-')
       .filter((line) => line.trim() !== '') // Remove empty lines caused by splitting
       .map((line, index) => <p key={index}>{`- ${line.trim()}`}</p>);
-  }
-
+  };
+  
   return (
     <div className="App">
       <h1>SafeSpaceAI</h1>
