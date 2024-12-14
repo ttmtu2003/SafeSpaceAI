@@ -2,6 +2,7 @@
 const fs = require('fs')
 const CHAT_GPT_MESSAGE_ROLES = require('./chatGPTMessageRoles')
 require('dotenv').config()
+const stringSimilarity = require('string-similarity');
 
 const {
   CHAT_GPT_TRAINING_CONTENT_DIR,
@@ -70,15 +71,34 @@ redisClient.connect()
     .catch(err => console.error('Redis connection error:', err))
 
 // Helper to get cached data
-async function getCachedResponse(key) {
-    try {
-        const data = await redisClient.get(key)
-        return data ? data : null
-    } catch (error) {
-        console.error('Error fetching from Redis:', error)
-        return null
+async function getCachedResponseFuzzy(message) {
+  try {
+    // Get all keys from Redis
+    const keys = await redisClient.keys('cyberbullying:*');
+
+    if (keys.length === 0) return null;
+
+    // Extract the messages from keys
+    const cachedMessages = keys.map(key => key.replace('cyberbullying:', ''));
+
+    // Compare the input message with cached messages
+    const { bestMatch } = stringSimilarity.findBestMatch(message, cachedMessages);
+
+    // Check if the best match is at least 95% similar
+    if (bestMatch.rating >= 0.95) {
+      const cacheKey = `cyberbullying:${bestMatch.target}`;
+      const cachedResponse = await redisClient.get(cacheKey);
+      console.log(`Fuzzy match found: ${bestMatch.target} with similarity ${bestMatch.rating}`);
+      return JSON.parse(cachedResponse);
     }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching from Redis with fuzzy matching:', error);
+    return null;
+  }
 }
+
 
 // Helper to set cache
 async function setCache(key, value, ttl = 3600) { // Default TTL: 1 hour
@@ -92,6 +112,6 @@ async function setCache(key, value, ttl = 3600) { // Default TTL: 1 hour
 module.exports = {
   getChatGPTTrainingContentMessageByIntent,
   redisClient,
-  getCachedResponse,
+  getCachedResponseFuzzy,
   setCache,
 }

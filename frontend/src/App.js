@@ -48,11 +48,18 @@ function App() {
   };
 
   const formatResponse = (text) => {
-    return text
+    // Replace escape characters like \n with actual newlines
+    const cleanedText = text.replace(/\\n/g, '\n').replace(/\\/g, '').trim();
+  
+    // Split the text by dashes, filter out empty or invalid items
+    return cleanedText
       .split('-')
-      .filter((line) => line.trim() !== '') // Remove empty lines caused by splitting
-      .map((line, index) => <p key={index}>{`- ${line.trim()}`}</p>);
-  }
+      .map((line) => line.trim()) // Trim each line
+      .filter((line) => line !== '' && !line.startsWith('"')) // Remove empty or invalid lines
+      .map((line, index) => <p key={index}>{`- ${line}`}</p>); // Format with a dash
+  };
+  
+  
 
   return (
     <div className="App">
